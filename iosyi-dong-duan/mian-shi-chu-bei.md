@@ -431,8 +431,6 @@
 10.说说你了解的第三方原理或底层知识？  
 答案详见：[http://url.cn/5oWSdgZ](http://url.cn/5oWSdgZ)
 
-
-
 ## **2018.4.17整理**
 
 参考：  
@@ -556,14 +554,14 @@
 
 ```
 一、非集合类对象的copy与mutableCopy
-      在非集合类对象中，对不可变对象进行copy操作，是指针复制，mutableCopy操作是内容复制；
-      对可变对象进行copy和mutableCopy都是内容复制。用代码简单表示如下： NSString *str = @"hello word!"; NSString *strCopy = [str copy] // 指针复制，strCopy与str的地址一样 NSMutableString *strMCopy = [str mutableCopy] // 内容复制，strMCopy与str的地址不一样   NSMutableString *mutableStr = [NSMutableString stringWithString: @"hello word!"]; NSString *strCopy = [mutableStr copy] // 内容复制 NSMutableString *strMCopy = [mutableStr mutableCopy] // 内容复制
+      在非集合类对象中，对不可变对象进行copy操作，是指针复制，mutableCopy操作是内容复制；
+      对可变对象进行copy和mutableCopy都是内容复制。用代码简单表示如下： NSString *str = @"hello word!"; NSString *strCopy = [str copy] // 指针复制，strCopy与str的地址一样 NSMutableString *strMCopy = [str mutableCopy] // 内容复制，strMCopy与str的地址不一样   NSMutableString *mutableStr = [NSMutableString stringWithString: @"hello word!"]; NSString *strCopy = [mutableStr copy] // 内容复制 NSMutableString *strMCopy = [mutableStr mutableCopy] // 内容复制
 ```
 
 ```
-二、集合类对象的copy与mutableCopy (同上)
-      在集合类对象中，对不可变对象进行copy操作，是指针复制，mutableCopy操作是内容复制；
-      对可变对象进行copy和mutableCopy都是内容复制。但是：集合对象的内容复制仅限于对象本身，对集合内的对象元素仍然是指针复制。(即单层内容复制) NSArray *arr = @[@[@"a", @"b"], @[@"c", @"d"]; NSArray *copyArr = [arr copy]; // 指针复制 NSMutableArray *mCopyArr = [arr mutableCopy]; //单层内容复制 NSMutableArray *array = [NSMutableArray arrayWithObjects:[NSMutableString stringWithString:@"a"],@"b",@"c",nil]; NSArray *copyArr = [mutableArr copy]; // 单层内容复制 NSMutableArray *mCopyArr = [mutableArr mutableCopy]; // 单层内容复制
+二、集合类对象的copy与mutableCopy (同上)
+      在集合类对象中，对不可变对象进行copy操作，是指针复制，mutableCopy操作是内容复制；
+      对可变对象进行copy和mutableCopy都是内容复制。但是：集合对象的内容复制仅限于对象本身，对集合内的对象元素仍然是指针复制。(即单层内容复制) NSArray *arr = @[@[@"a", @"b"], @[@"c", @"d"]; NSArray *copyArr = [arr copy]; // 指针复制 NSMutableArray *mCopyArr = [arr mutableCopy]; //单层内容复制 NSMutableArray *array = [NSMutableArray arrayWithObjects:[NSMutableString stringWithString:@"a"],@"b",@"c",nil]; NSArray *copyArr = [mutableArr copy]; // 单层内容复制 NSMutableArray *mCopyArr = [mutableArr mutableCopy]; // 单层内容复制
 ```
 
 > 【总结一句话】：  
@@ -582,22 +580,23 @@
    > 具体步骤：  
    > 1. 需声明该类遵从 NSCopying 协议  
    > 2. 实现 NSCopying 协议的方法。  
-   > // 该协议只有一个方法:  
-   > - \(id\)copyWithZone:\(NSZone \*\)zone;  
-   > // 注意：使用 copy 修饰符，调用的是copy方法，其实真正需要实现的是 “copyWithZone” 方法。
+   > // 该协议只有一个方法:
+   >
+   > * \(id\)copyWithZone:\(NSZone \*\)zone;  
+   >   // 注意：使用 copy 修饰符，调用的是copy方法，其实真正需要实现的是 “copyWithZone” 方法。
 
 3. _**写一个 setter 方法用于完成 @property \(nonatomic, retain\) NSString \*name，写一个 setter 方法用于完成 @property \(nonatomic, copy\) NSString \*name**_
 
 ```
-// retain - (void)setName:(NSString *)str {
-      [str retain];
-      [_name release];
-      _name = str;
-    } // copy - (void)setName:(NSString *)str {
-      id t = [str copy];
-      [_name release];
-      _name = t;
-    }
+// retain - (void)setName:(NSString *)str {
+      [str retain];
+      [_name release];
+      _name = str;
+    } // copy - (void)setName:(NSString *)str {
+      id t = [str copy];
+      [_name release];
+      _name = t;
+    }
 ```
 
 1. _**@synthesize 和 @dynamic 分别有什么作用？**_
@@ -652,20 +651,22 @@
 
     > 1\). KVC\(Key-Value-Coding\)：键值编码 是一种通过字符串间接访问对象的方式（即给属性赋值）  
     > 举例说明：  
-    > [stu.name](https://link.jianshu.com/?t=http%3A%2F%2Fstu.name) = @"张三" // 点语法给属性赋值  
+    > [stu.name](https://link.jianshu.com/?t=http%3A%2F%2Fstu.name) = @"张三" // 点语法给属性赋值  
     > \[stu setValue:@"张三" forKey:@"name"\]; // 通过字符串使用KVC方式给属性赋值  
     > stu1.nameLabel.text = @"张三";  
     > \[stu1 setValue:@"张三" forKey:@"nameLabel.text"\]; // 跨层赋值  
     > 2\). KVO\(key-Value-Observing\)：键值观察机制 他提供了观察某一属性变化的方法，极大的简化了代码。  
     > KVO只能被KVC触发，包括使用setValue:forKey:方法和点语法。  
-    > // 通过下方方法为属性添加KVO观察  
-    > - \(void\)addObserver:\(NSObject \*\)observer forKeyPath:\(NSString \*\)keyPath options:\(NSKeyValueObservingOptions\)options context:\(nullable void \*\)context;  
-    >   
-    > // 当被观察的属性发送变化时，会自动触发下方方法  
-    > - \(void\)observeValueForKeyPath:\(NSString \*\)keyPath ofObject:\(id\)object change:\(NSDictionary \*\)change context:\(void \*\)context;  
-    >   
-    > KVC 和 KVO 的 keyPath 可以是属性、实例变量、成员变量。  
-    > [iOS 成员变量，属性变量，局部变量，实例变量，全局变量 详解](https://link.jianshu.com/?t=http%3A%2F%2Fblog.csdn.net%2Fchenshun123%2Farticle%2Fdetails%2F52280564)
+    > // 通过下方方法为属性添加KVO观察
+    >
+    > * \(void\)addObserver:\(NSObject \*\)observer forKeyPath:\(NSString \*\)keyPath options:\(NSKeyValueObservingOptions\)options context:\(nullable void \*\)context;
+    >
+    >   // 当被观察的属性发送变化时，会自动触发下方方法
+    >
+    > * \(void\)observeValueForKeyPath:\(NSString \*\)keyPath ofObject:\(id\)object change:\(NSDictionary \*\)change context:\(void \*\)context;
+    >
+    >   KVC 和 KVO 的 keyPath 可以是属性、实例变量、成员变量。  
+    >   [iOS 成员变量，属性变量，局部变量，实例变量，全局变量 详解](https://link.jianshu.com/?t=http%3A%2F%2Fblog.csdn.net%2Fchenshun123%2Farticle%2Fdetails%2F52280564)
 
 11. _**KVC的底层实现？**_
 
@@ -708,7 +709,7 @@
     > Student \*stu = \[\[class alloc\] init\];  
     > 将类名变为字符串。  
     > Class class =\[Student class\];  
-    > NSString _className = NSStringFromClass\(class\);  
+    > NSString _className = NSStringFromClass\(class\);  
     > 2\). SEL的反射  
     > 通过方法的字符串形式实例化方法。  
     > SEL selector = NSSelectorFromString\(@"setName"\);  
@@ -765,35 +766,36 @@
 
 25. _**下面的代码输出什么？**_
 
-    > @implementation Son : Father  
-    > - \(id\)init {  
-    > if \(self = \[super init\]\) {  
-    > NSLog\(@"%@", NSStringFromClass\(\[self class\]\)\); // Son  
-    > NSLog\(@"%@", NSStringFromClass\(\[super class\]\)\); // Son  
-    > }  
-    > return self;  
-    > }  
-    > @end  
-    > // 解析：  
-    > self 是类的隐藏参数，指向当前调用方法的这个类的实例。  
-    > super是一个Magic Keyword，它本质是一个编译器标示符，和self是指向的同一个消息接收者。  
-    > 不同的是：super会告诉编译器，调用class这个方法时，要去父类的方法，而不是本类里的。  
-    > 上面的例子不管调用\[self class\]还是\[super class\]，接受消息的对象都是当前 Son \*obj 这个对象。
+    > @implementation Son : Father
+    >
+    > * \(id\)init {  
+    >   if \(self = \[super init\]\) {  
+    >   NSLog\(@"%@", NSStringFromClass\(\[self class\]\)\); // Son  
+    >   NSLog\(@"%@", NSStringFromClass\(\[super class\]\)\); // Son  
+    >   }  
+    >   return self;  
+    >   }  
+    >   @end  
+    >   // 解析：  
+    >   self 是类的隐藏参数，指向当前调用方法的这个类的实例。  
+    >   super是一个Magic Keyword，它本质是一个编译器标示符，和self是指向的同一个消息接收者。  
+    >   不同的是：super会告诉编译器，调用class这个方法时，要去父类的方法，而不是本类里的。  
+    >   上面的例子不管调用\[self class\]还是\[super class\]，接受消息的对象都是当前 Son \*obj 这个对象。
 
 26. _**写一个完整的代理，包括声明、实现**_
 
 ```
-// 创建 @protocol MyDelagate @required -(void)eat:(NSString *)foodName; 
-    @optional -(void)run;
-    @end //  声明 .h @interface person: NSObject
+// 创建 @protocol MyDelagate @required -(void)eat:(NSString *)foodName; 
+    @optional -(void)run;
+    @end //  声明 .h @interface person: NSObject
 
 
-    @end //  实现 .m @implementation person - (void)eat:(NSString *)foodName { NSLog(@"吃:%@!", foodName);
-    } 
-    - (void)run { NSLog(@"run!");
-    }
+    @end //  实现 .m @implementation person - (void)eat:(NSString *)foodName { NSLog(@"吃:%@!", foodName);
+    } 
+    - (void)run { NSLog(@"run!");
+    }
 
-    @end
+    @end
 ```
 
 1. _**isKindOfClass、isMemberOfClass、selector作用分别是什么**_
@@ -815,16 +817,16 @@
 4. _**block反向传值**_
 
 ```
-*   在控制器间传值可以使用代理或者block，使用block相对来说简洁。
+*   在控制器间传值可以使用代理或者block，使用block相对来说简洁。
 
-*  在前一个控制器的touchesBegan:方法内实现如下代码。 // OneViewController.m TwoViewController *twoVC = [[TwoViewController alloc] init];
-      twoVC.valueBlcok = ^(NSString *str) { NSLog(@"OneViewController拿到值：%@", str); 
-      };
-      [self presentViewController:twoVC animated:YES completion:nil]; // TwoViewController.h   （在.h文件中声明一个block属性） @property (nonatomic ,strong) void(^valueBlcok)(NSString *str); // TwoViewController.m   （在.m文件中实现方法） - (void)touchesBegan:(NSSet
- *)touches withEvent:(UIEvent *)event { // 传值:调用block if (_valueBlcok) {
-            _valueBlcok(@"123456");
-        }
-    }
+*  在前一个控制器的touchesBegan:方法内实现如下代码。 // OneViewController.m TwoViewController *twoVC = [[TwoViewController alloc] init];
+      twoVC.valueBlcok = ^(NSString *str) { NSLog(@"OneViewController拿到值：%@", str); 
+      };
+      [self presentViewController:twoVC animated:YES completion:nil]; // TwoViewController.h   （在.h文件中声明一个block属性） @property (nonatomic ,strong) void(^valueBlcok)(NSString *str); // TwoViewController.m   （在.m文件中实现方法） - (void)touchesBegan:(NSSet
+ *)touches withEvent:(UIEvent *)event { // 传值:调用block if (_valueBlcok) {
+            _valueBlcok(@"123456");
+        }
+    }
 ```
 
 1. _**block的注意点**_
@@ -895,8 +897,8 @@
     > dispatch\_group\_t group = dispatch\_group\_create\(\);  
     > // 获取全局并发队列  
     > dispatch\_queue\_t queue = dispatch\_get\_global\_queue\(DISPATCH\_QUEUE\_PRIORITY\_DEFAULT, 0\);  
-    > dispatch\_group\_async\(group, queue, ^{ /\*加载图片1 _/ }\);  
-    > dispatch\_group\_async\(group, queue, ^{ /_加载图片2 _/ }\);  
+    > dispatch\_group\_async\(group, queue, ^{ /\*加载图片1 _/ }\);  
+    > dispatch\_group\_async\(group, queue, ^{ /_加载图片2 _/ }\);  
     > dispatch\_group\_async\(group, queue, ^{ /_加载图片3 \*/ }\);  
     > // 当并发队列组中的任务执行完毕后才会执行这里的代码  
     > dispatch\_group\_notify\(group, dispatch\_get\_main\_queue\(\), ^{  
@@ -906,26 +908,1052 @@
 11. _**dispatch\_barrier\_async（栅栏函数）的作用是什么？**_
 
 ```
-函数定义：dispatch_barrier_async(dispatch_queue_t queue, dispatch_block_t block);
-    作用： 1.在它前面的任务执行结束后它才执行，它后面的任务要等它执行完成后才会开始执行。 2.避免数据竞争 // 1.创建并发队列 dispatch_queue_t queue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_CONCURRENT); // 2.向队列中添加任务 dispatch_async(queue, ^{ // 1.2是并行的 NSLog(@"任务1, %@",[NSThread currentThread]);
-    }); dispatch_async(queue, ^{ NSLog(@"任务2, %@",[NSThread currentThread]);
-    });
+函数定义：dispatch_barrier_async(dispatch_queue_t queue, dispatch_block_t block);
+    作用： 1.在它前面的任务执行结束后它才执行，它后面的任务要等它执行完成后才会开始执行。 2.避免数据竞争 // 1.创建并发队列 dispatch_queue_t queue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_CONCURRENT); // 2.向队列中添加任务 dispatch_async(queue, ^{ // 1.2是并行的 NSLog(@"任务1, %@",[NSThread currentThread]);
+    }); dispatch_async(queue, ^{ NSLog(@"任务2, %@",[NSThread currentThread]);
+    });
 
-    dispatch_barrier_async(queue, ^{ NSLog(@"任务 barrier, %@", [NSThread currentThread]);
-    }); dispatch_async(queue, ^{ // 这两个是同时执行的 NSLog(@"任务3, %@",[NSThread currentThread]);
-    }); dispatch_async(queue, ^{ NSLog(@"任务4, %@",[NSThread currentThread]);
-    }); // 输出结果: 任务1 任务2 ——》 任务 barrier ——》任务3 任务4  // 其中的任务1与任务2，任务3与任务4 由于是并行处理先后顺序不定。
+    dispatch_barrier_async(queue, ^{ NSLog(@"任务 barrier, %@", [NSThread currentThread]);
+    }); dispatch_async(queue, ^{ // 这两个是同时执行的 NSLog(@"任务3, %@",[NSThread currentThread]);
+    }); dispatch_async(queue, ^{ NSLog(@"任务4, %@",[NSThread currentThread]);
+    }); // 输出结果: 任务1 任务2 ——》 任务 barrier ——》任务3 任务4  // 其中的任务1与任务2，任务3与任务4 由于是并行处理先后顺序不定。
 ```
 
 1. _**以下代码运行结果如何？**_
 
 ```
-- (void)viewDidLoad {
-    [super viewDidLoad]; NSLog(@"1"); dispatch_sync(dispatch_get_main_queue(), ^{ NSLog(@"2");
-    }); NSLog(@"3");
-} // 只输出：1。（主线程死锁）
+- (void)viewDidLoad {
+    [super viewDidLoad]; NSLog(@"1"); dispatch_sync(dispatch_get_main_queue(), ^{ NSLog(@"2");
+    }); NSLog(@"3");
+} // 只输出：1。（主线程死锁）
 ```
 
-1. 
+_**  
+什么是 RunLoop**_
+
+1. > \* 从字面上看，就是运行循环，跑圈  
+   > \* 其实它内部就是do-while循环，在这个循环内部不断地处理各种任务（比如Source、Timer、Observer）  
+   > \* 一个线程对应一个RunLoop，基本作用就是保持程序的持续运行，处理app中的各种事件。  
+   > \* 通过runloop，有事运行，没事就休息，可以节省cpu资源，提高程序性能。  
+   >   
+   > 主线程的run loop默认是启动的。iOS的应用程序里面，程序启动后会有一个如下的main\(\)函数  
+   > int main\(int argc, char \* argv\[\]\) {  
+   > @autoreleasepool {  
+   > return UIApplicationMain\(argc, argv, nil, NSStringFromClass\(\[AppDelegate class\]\)\);  
+   > }  
+   > }  
+   > [RunLoop学习总结](https://www.jianshu.com/p/9d67e3fd6c61)
+2. _**说说你对 runtime 的理解**_
+
+   > Runtime又叫运行时，是一套底层的C语言API，其为iOS内部的核心之一，我们平时编写的OC代码，底层都是基于它来实现的。
+
+1. _**Runtime实现的机制是什么，怎么用，一般用于干嘛？**_
+
+   > 1\). 使用时需要导入的头文件  
+   > 2\). Runtime 运行时机制，它是一套C语言库。  
+   > 3\). 实际上我们编写的所有OC代码，最终都是转成了runtime库的东西。  
+   > 比如：  
+   > 类转成了 Runtime 库里面的结构体等数据类型，  
+   > 方法转成了 Runtime 库里面的C语言函数，  
+   > 平时调方法都是转成了 objc\_msgSend 函数（所以说OC有个消息发送机制）  
+   > // OC是动态语言，每个方法在运行时会被动态转为消息发送，即：objc\_msgSend\(receiver, selector\)。  
+   > // \[stu show\]; 在objc动态编译时，会被转意为：objc\_msgSend\(stu, @selector\(show\)\);  
+   > 4\). 因此，可以说 Runtime 是OC的底层实现，是OC的幕后执行者。  
+   >   
+   > 有了Runtime库，能做什么事情呢？  
+   > Runtime库里面包含了跟类、成员变量、方法相关的API。  
+   > 比如：  
+   > （1）获取类里面的所有成员变量。  
+   > （2）为类动态添加成员变量。  
+   > （3）为类动态添加新的方法。  
+   > （4）动态改变类的方法实现等。\(Method Swizzling\)  
+   > 因此，有了Runtime，想怎么改就怎么改。  
+   > [iOS：学习runtime的理解和心得](https://link.jianshu.com/?t=http%3A%2F%2Fwww.cocoachina.com%2Fios%2F20150901%2F13173.html)
+
+2. _**什么是 Method Swizzle（黑魔法），什么情况下会使用？**_
+
+   > 1\). 在没有一个类的实现源码的情况下，想改变其中一个方法的实现，除了继承它重写、和借助类别重名方法暴力抢先之外，还有更加灵活的方法 Method Swizzle。  
+   > 2\). Method Swizzle 指的是改变一个已存在的选择器对应的实现的过程。OC中方法的调用能够在运行时通过改变，通过改变类的调度表中选择器到最终函数间的映射关系。  
+   > 3\). 在OC中调用一个方法，其实是向一个对象发送消息，查找消息的唯一依据是selector的名字。利用OC的动态特性，可以实现在运行时偷换selector对应的方法实现。  
+   > 4\). 每个类都有一个方法列表，存放着selector的名字和方法实现的映射关系。IMP有点类似函数指针，指向具体的方法实现。  
+   > 5\). 我们可以利用 method\_exchangeImplementations 来交换2个方法中的IMP。  
+   > 6\). 我们可以利用 class\_replaceMethod 来修改类。  
+   > 7\). 我们可以利用 method\_setImplementation 来直接设置某个方法的IMP。  
+   > 8\). 归根结底，都是偷换了selector的IMP。
+
+3. _**\_objc\_msgForward 函数是做什么的，直接调用它将会发生什么？**_
+
+   > 答：\_objc\_msgForward是 IMP 类型，用于消息转发的：当向一个对象发送一条消息，但它并没有实现的时候，\_objc\_msgForward会尝试做消息转发。
+
+4. _**什么是 TCP / UDP ?**_
+
+   > TCP：传输控制协议。  
+   > UDP：用户数据协议。  
+   >   
+   > TCP 是面向连接的，建立连接需要经历三次握手，是可靠的传输层协议。  
+   > UDP 是面向无连接的，数据传输是不可靠的，它只管发，不管收不收得到。  
+   > 简单的说，TCP注重数据安全，而UDP数据传输快点，但安全性一般。
+
+5. _**通信底层原理（OSI七层模型）**_
+
+   > OSI采用了分层的结构化技术，共分七层：  
+   > 物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。
+
+6. _**介绍一下XMPP？**_
+
+   > XMPP是一种以XML为基础的开放式实时通信协议。  
+   > 简单的说，XMPP就是一种协议，一种规定。就是说，在网络上传东西，XMM就是规定你上传大小的格式。
+
+7. _**OC中创建线程的方法是什么？如果在主线程中执行代码，方法是什么？**_
+
+```
+// 创建线程的方法 - [NSThread detachNewThreadSelector:nil toTarget:nil withObject:nil]
+   - [self performSelectorInBackground:nil withObject:nil];
+   - [[NSThread alloc] initWithTarget:nil selector:nil object:nil];
+   - dispatch_async(dispatch_get_global_queue(0, 0), ^{});
+   - [[NSOperationQueue new] addOperation:nil]; // 主线程中执行代码的方法 - [self performSelectorOnMainThread:nil withObject:nil waitUntilDone:YES];
+   - dispatch_async(dispatch_get_main_queue(), ^{});
+   - [[NSOperationQueue mainQueue] addOperation:nil];
+```
+
+1. _**tableView的重用机制？**_
+
+   > 答：UITableView 通过重用单元格来达到节省内存的目的: 通过为每个单元格指定一个重用标识符，即指定了单元格的种类,当屏幕上的单元格滑出屏幕时，系统会把这个单元格添加到重用队列中，等待被重用，当有新单元格从屏幕外滑入屏幕内时，从重用队列中找看有没有可以重用的单元格，如果有，就拿过来用，如果没有就创建一个来使用。
+
+2. _**用伪代码写一个线程安全的单例模式**_
+
+```
+static id _instance;
+    + (id)allocWithZone:(struct _NSZone *)zone { static dispatch_once_t onceToken; dispatch_once(
+&
+onceToken, ^{
+           _instance = [super allocWithZone:zone];
+       }); return _instance;
+    }
+
+    + (instancetype)sharedData { static dispatch_once_t onceToken; dispatch_once(
+&
+onceToken, ^{
+           _instance = [[self alloc] init];
+       }); return _instance;
+    }
+
+    - (id)copyWithZone:(NSZone *)zone { return _instance;
+    }
+```
+
+1. _**如何实现视图的变形?**_
+
+   > 答：通过修改view的 transform 属性即可。
+
+2. _**在手势对象基础类UIGestureRecognizer的常用子类手势类型中哪两个手势发生后，响应只会执行一次？**_
+
+   > 答：UITapGestureRecognizer,UISwipeGestureRecognizer是一次性手势,手势发生后,响应只会执行一次。
+
+3. _**字符串常用方法：**_
+
+   > NSString _str = @"abc_123";  
+   > NSArray _arr = \[str componentsSeparatedByString:@"_"\]; //以目标字符串把原字符串分割成两部分，存到数组中。@\[@"abc", @"123"\];
+
+4. _**如何高性能的给 UIImageView 加个圆角?**_
+
+    *   不好的解决方案：使用下面的方式会`强制Core Animation提前渲染屏幕的离屏绘制, 而离屏绘制就会给性能带来负面影响`，会有卡顿的现象出现。 self.view.layer.cornerRadius = 5.0f; self.view.layer.masksToBounds = YES; 
+
+        *   正确的解决方案：使用绘图技术
+
+            - (UIImage *)circleImage { // NO代表透明 UIGraphicsBeginImageContextWithOptions(self.size, NO, 0.0); // 获得上下文 CGContextRef ctx = UIGraphicsGetCurrentContext(); // 添加一个圆 CGRect rect = CGRectMake(0, 0, self.size.width, self.size.height); CGContextAddEllipseInRect(ctx, rect); // 裁剪 CGContextClip(ctx); // 将图片画上去 [self drawInRect:rect]; UIImage *image = UIGraphicsGetImageFromCurrentImageContext(); // 关闭上下文 UIGraphicsEndImageContext(); return image;
+            } 
+
+        *   还有一种方案：使用了贝塞尔曲线"切割"个这个图片, 给UIImageView 添加了的圆角，其实也是通过绘图技术来实现的。 UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+            imageView.center = CGPointMake(200, 300); UIImage *anotherImage = [UIImage imageNamed:@"image"]; UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, NO, 1.0);
+            [[UIBezierPath bezierPathWithRoundedRect:imageView.bounds
+                                   cornerRadius:50] addClip];
+            [anotherImage drawInRect:imageView.bounds];
+            imageView.image = UIGraphicsGetImageFromCurrentImageContext(); UIGraphicsEndImageContext();
+            [self.view addSubview:imageView];
+
+1. _**你是怎么封装一个view的**_
+
+```
+1）. 可以通过纯代码或者xib的方式来封装子控件 2）. 建立一个跟view相关的模型，然后将模型数据传给view，通过模型上的数据给view的子控件赋值 /**
+     *  纯代码初始化控件时一定会走这个方法
+     */ - (instancetype)initWithFrame:(CGRect)frame { if(self = [super initWithFrame:frame]) {
+            [self setupUI];
+        } return self;
+    } /**
+     *  通过xib初始化控件时一定会走这个方法
+     */ - (id)initWithCoder:(NSCoder *)aDecoder { if(self = [super initWithCoder:aDecoder]) {
+            [self setupUI];
+        } return self;
+    }
+
+    - (void)setupUI { // 初始化代码 }
+```
+
+1. _**HTTP协议中 POST 方法和 GET 方法有那些区别?**_
+
+   > 1. GET用于向服务器请求数据，POST用于提交数据  
+   > 2. GET请求，请求参数拼接形式暴露在地址栏，而POST请求参数则放在请求体里面，因此GET请求不适合用于验证密码等操作  
+   > 3. GET请求的URL有长度限制，POST请求不会有长度限制
+
+2. _**请简单的介绍下APNS发送系统消息的机制**_
+
+   > APNS优势：杜绝了类似安卓那种为了接受通知不停在后台唤醒程序保持长连接的行为，由iOS系统和APNS进行长连接替代。  
+   > APNS的原理：  
+   > 1\). 应用在通知中心注册，由iOS系统向APNS请求返回设备令牌\(device Token\)  
+   > 2\). 应用程序接收到设备令牌并发送给自己的后台服务器  
+   > 3\). 服务器把要推送的内容和设备发送给APNS  
+   > 4\). APNS根据设备令牌找到设备，再由iOS根据APPID把推送内容展示
+
+# 77. ios开发逆向传值的几种方法整理
+
+#### 第一种：代理传值
+
+```
+第二个控制器： @protocol WJSecondViewControllerDelegate 
+ - (void)changeText:(NSString*)text; @end @property(nonatomic,assign)id
+delegate;
+
+  - (IBAction)buttonClick:(UIButton*)sender {
+  _str = sender.titleLabel.text;
+  [self.delegate changeText:sender.titleLabel.text];
+  [self.navigationController popViewControllerAnimated:YES];
+  }
+
+  第一个控制器:
+
+  - (IBAction)pushToSecond:(id)sender {
+  WJSecondViewController *svc = [[WJSecondViewController alloc]initWithNibName:@"WJSecondViewController" bundle:nil];
+  svc.delegate = self;
+  svc.str = self.navigationItem.title;
+  [self.navigationController pushViewController:svc animated:YES];
+  [svc release];
+  }
+  - (void)changeText:(NSString *)text{ self.navigationItem.title = text;
+  }
+```
+
+#### 第二种：通知传值
+
+```
+第一个控制器： //注册监听通知 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(limitDataForModel:) name:@"NOV" object:nil];
+  - (void)limitDataForModel:(NSNotification *)noti{ self.gamesInfoArray = noti.object;
+  }
+
+  第二个控制器： //发送通知 [[NSNotificationCenter defaultCenter]     postNotificationName:@"NOV" object:gameArray];
+```
+
+#### 第三种：单例传值
+
+```
+Single是一个单例类，并且有一个字符串类型的属性titleName
+  在第二个控制器：
+
+  - (IBAction)buttonClick:(UIButton*)sender {
+  Single *single = [Single sharedSingle];
+  single.titleName = sender.titleLabel.text;
+  [self.navigationController popViewControllerAnimated:YES];
+  }
+  
+  第一个控制器：
+
+  - (void)viewWillAppear:(BOOL)animated{
+  [super viewWillAppear:animated];
+  Single *single = [Single sharedSingle]; self.navigationItem.title = single.titleName;
+  }
+```
+
+#### 第四种：block传值
+
+```
+第二个控制器： @property (nonatomic,copy) void (^changeText_block)(NSString*);
+  - (IBAction)buttonClick:(UIButton*)sender {
+  _str = sender.titleLabel.text; self.changeText_block(sender.titleLabel.text);
+  [self.navigationController popViewControllerAnimated:YES];
+  }
+
+  第一个控制器：
+
+  - (IBAction)pushToSecond:(id)sender {
+  WJSecondViewController *svc = [[WJSecondViewController alloc]initWithNibName:@"WJSecondViewController" bundle:nil];
+  svc.str = self.navigationItem.title;
+  [svc setChangeText_block:^(NSString *str) {
+      
+>
+self.navigationItem.title = str;
+  }]；
+  [self.navigationController pushViewController:svc animated:YES];
+  }
+```
+
+#### 第五种：extern传值
+
+```
+第二个控制器： extern NSString *btn;
+  - (IBAction)buttonClick:(UIButton*)sender {
+  btn = sender.titleLabel.text;
+  [self.navigationController popViewControllerAnimated:YES];
+  }
+ 
+  第一个控制器: NSString *btn = nil;
+  - (void)viewWillAppear:(BOOL)animated{
+  [super viewWillAppear:animated]; self.navigationItem.title = btn;
+  }
+```
+
+#### 第六种：KVO传值
+
+```
+第一个控制器:
+
+  - (void)viewDidLoad {
+  [super viewDidLoad];
+   _vc =[[SecondViewController alloc]init]; //self监听vc里的textValue属性 [_vc addObserver:self forKeyPath:@"textValue" options:0 context:nil];   
+  }
+
+  第二个控制器:
+
+  - (IBAction)buttonClicked:(id)sender { self.textValue = self.textField.text;
+  [self.navigationController popViewControllerAnimated:YES];
+  }
+```
+
+# 78. 浅谈iOS开发中方法延迟执行的几种方式
+
+### Method1. performSelector方法
+
+### Method2. NSTimer定时器
+
+### Method3. NSThread线程的sleep
+
+### Method4. GCD
+
+---
+
+公用延迟执行方法
+
+> - \(void\)delayMethod{ NSLog\(@"delayMethodEnd"\);
+
+---
+
+### Method1: performSelector
+
+    [self performSelector:@selector(delayMethod) withObject:nil/*可传任意类型参数*/ afterDelay:2.0];`
+    注：此方法是一种非阻塞的执行方式，未找到取消执行的方法。
+
+
+    >
+     程序运行结束
+
+    >
+     2015-08-31 10:56:59.361 CJDelayMethod[1080:39604] delayMethodStart2015-08-31 10:56:59.363 CJDelayMethod[1080:39604] nextMethod2015-08-31 10:57:01.364 CJDelayMethod[1080:39604] delayMethodEnd
+
+### Method2: NSTimer定时器
+
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(delayMethod) userInfo:nil repeats:NO];`
+      注：此方法是一种非阻塞的执行方式，
+      取消执行方法：`- (void)invalidate;`即可
+
+
+    >
+     程序运行结束
+
+    >
+     2015-08-31 10:58:10.182 CJDelayMethod[1129:41106] delayMethodStart2015-08-31 10:58:10.183 CJDelayMethod[1129:41106] nextMethod2015-08-31 10:58:12.185 CJDelayMethod[1129:41106] delayMethodEnd
+
+### Method3: NSThread线程的sleep
+
+```
+[NSThread sleepForTimeInterval:2.0];
+  注：此方法是一种阻塞执行方式，建议放在子线程中执行，否则会卡住界面。但有时还是需要阻塞执行，如进入欢迎界面需要沉睡3秒才进入主界面时。
+  没有找到取消执行方式。
+
+  
+>
+ 程序运行结束
+  
+>
+ 2015-08-31 10:58:41.501 CJDelayMethod[1153:41698] delayMethodStart2015-08-31 10:58:43.507 CJDelayMethod[1153:41698] nextMethod
+```
+
+### Method4: GCD
+
+```
+__block ViewController/*主控制器*/ *weakSelf = self; dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0/*延迟执行时间*/ * NSEC_PER_SEC));
+
+  dispatch_after(delayTime, dispatch_get_main_queue(), ^{
+      [weakSelf delayMethod];
+  });
+
+  注：此方法可以在参数中选择执行的线程，是一种非阻塞执行方式。没有找到取消执行方式。
+
+  
+>
+ 程序运行结束
+  
+>
+ 2015-08-31 10:59:21.652 CJDelayMethod[1181:42438] delayMethodStart2015-08-31 10:59:21.653 CJDelayMethod[1181:42438] nextMethod2015-08-31 10:59:23.653 CJDelayMethod[1181:42438] delayMethodEnd
+```
+
+    完整代码参见：
+
+
+    >
+     // 
+    >
+     // ViewController.m 
+    >
+     // CJDelayMethod 
+    >
+     // 
+    >
+     // Created by 陈杰 on 8/31/15. 
+    >
+     // Copyright (c) 2015 chenjie. All rights reserved. 
+    >
+     // 
+    >
+    >
+     # import "ViewController.h" 
+    >
+    >
+     @interface ViewController () 
+    >
+     @property (nonatomic, strong) NSTimer *timer;
+
+    >
+     @end 
+    >
+     @implementation ViewController* 
+    >
+    >
+      *`- (void)viewDidLoad { `*
+
+    >
+    >
+     *` [super viewDidLoad]; `*
+
+    >
+    >
+     *` NSLog(@"delayMethodStart"); `*
+
+    >
+    >
+     *` [self methodOnePerformSelector];// `* 
+    >
+    >
+     *` [self methodTwoNSTimer];// `* 
+    >
+    >
+     *` [self methodThreeSleep];//`* 
+    >
+    >
+     *` [self methodFourGCD]; `*
+
+    >
+    >
+     *` NSLog(@"nextMethod");`*
+
+    >
+    >
+     *`}`*
+
+    >
+    >
+      *`- (void)methodFiveAnimation{ `*
+
+    >
+    >
+     *` [UIView animateWithDuration:0 delay:2.0 options:UIViewAnimationOptionAllowUserInteraction animations:^{ } completion:^(BOOL finished) { `*
+
+    >
+    >
+     *` [self delayMethod]; `*
+
+    >
+    >
+     *` }];`*
+
+    >
+    >
+     *`}`
+
+    >
+     `- (void)methodFourGCD{ `*
+
+    >
+    >
+     *` __block ViewController`*`weakSelf = self; dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)); dispatch_after(delayTime, dispatch_get_main_queue(), ^{ `
+
+    >
+    >
+     ` [weakSelf delayMethod]; `
+
+    >
+    >
+     ` });`
+
+    >
+    >
+     `}`
+
+    >
+    >
+      `- (void)methodThreeSleep{ `
+
+    >
+    >
+     ` [NSThread sleepForTimeInterval:2.0];`
+
+    >
+    >
+     `}`
+
+    >
+    >
+      `- (void)methodTwoNSTimer{`
+
+    >
+    >
+     ` NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(delayMethod) userInfo:nil repeats:NO];`
+
+    >
+    >
+     `}`
+
+    >
+    >
+      `- (void)methodOnePerformSelector{`
+
+    >
+    >
+     ` [self performSelector:@selector(delayMethod) withObject:nil/*可传任意类型参数*/ afterDelay:2.0];`
+
+    >
+    >
+     `}`
+
+    >
+    >
+      `- (void)delayMethod{`
+
+    >
+    >
+     ` NSLog(@"delayMethodEnd");`
+
+    >
+    >
+     `}`
+
+    >
+     `- (void)didReceiveMemoryWarning { `
+
+    >
+    >
+     ` [super didReceiveMemoryWarning]; `
+
+    >
+    >
+     ` // Dispose of any resources that can be recreated.` 
+    >
+    >
+     `}`
+
+    >
+    >
+     `@end`
+
+---
+
+1. _**NSPersistentStoreCoordinator , NSManaged0bjectContext 和NSManaged0bject中的那些需要在线程中创建或者传递**_
+
+   > 答：NSPersistentStoreCoordinator是持久化存储协调者，主要用于协调托管对象上下文和持久化存储区之间的关系。NSManagedObjectContext使用协调者的托管对象模型将数据保存到数据库，或查询数据。
+
+2. _**您是否做过一部的网络处理和通讯方面的工作？如果有，能具体介绍一下实现策略么?**_
+
+   > 答：使用NSOperation发送异步网络请求，使用NSOperationQueue管理线程数目及优先级，底层是用NSURLConnetion，
+
+3. _**你使用过Objective-C的运行时编程（Runtime Programming）么？如果使用过，你用它做了什么？你还能记得你所使用的相关的头文件或者某些方法的名称吗？**_
+
+   > 答：Objecitve-C的重要特性是Runtime（运行时）,在\#import下能看到相关的方法，用过objc\_getClass\(\)和class\_copyMethodList\(\)获取过私有API;使用  
+   > Method method1 = class\_getInstanceMethod\(cls, sel1\);  
+   > Method method2 = class\_getInstanceMethod\(cls, sel2\);  
+   > method\_exchangeImplementations\(method1, method2\);  
+   >   
+   > 代码交换两个方法，在写unit test时使用到。
+
+4. _**Core开头的系列的内容。是否使用过CoreAnimation和CoreGraphics。UI框架和CA，CG框架的联系是什么？分别用CA和CG做过些什么动画或者图像上的内容。（有需要的话还可以涉及Quartz的一些内容）**_
+
+   > 答：UI框架的底层有CoreAnimation，CoreAnimation的底层有CoreGraphics。  
+   > UIKit \|  
+   > ------------ \|  
+   > Core Animation \|  
+   > Core Graphics \|  
+   > Graphics Hardware\|  
+   > 使用CA做过menu菜单的展开收起（太逊了）
+
+5. _**是否使用过CoreText或者CoreImage等？如果使用过，请谈谈你使用CoreText或者CoreImage的体验。**_
+
+   > 答：CoreText可以解决复杂文字内容排版问题。CoreImage可以处理图片，为其添加各种效果。体验是很强大，挺复杂的。
+
+6. _**自动释放池是什么,如何工作**_
+
+   > 答：当您向一个对象发送一个autorelease消息时，Cocoa就会将该对象的一个引用放入到最新的自动释放.它仍然是个OC的对象，因此自动释放池定义的作用域内的其它对象可以向它发送消息。当程序执行到作用域结束的位置时，自动释放池就会被释放，池中的所有对象也就被释放。
+
+7. _**NSNotification和KVO的区别和用法是什么？什么时候应该使用通知，什么时候应该使用KVO，它们的实现上有什么区别吗？如果用protocol和delegate（或者delegate的Array）来实现类似的功能可能吗？如果可能，会有什么潜在的问题？如果不能，为什么？（虽然protocol和delegate这种东西面试已经面烂了…）**_
+
+   > 答：NSNotification是通知模式在iOS的实现，KVO的全称是键值观察\(Key-value observing\),其是基于KVC（key-value coding）的，KVC是一个通过属性名访问属性变量的机制。例如将Module层的变化，通知到多个Controller对象时，可以使用NSNotification；如果是只需要观察某个对象的某个属性，可以使用KVO。  
+   > 对于委托模式，在设计模式中是对象适配器模式，其是delegate是指向某个对象的，这是一对一的关系，而在通知模式中，往往是一对多的关系。委托模式，从技术上可以现在改变delegate指向的对象，但不建议这样做，会让人迷惑，如果一个delegate对象不断改变，指向不同的对象。
+
+8. _**你用过NSOperationQueue么？如果用过或者了解的话，你为什么要使用NSOperationQueue，实现了什么？请描述它和G.C.D的区别和类似的地方（提示：可以从两者的实现机制和适用范围来描述）。**_
+
+   > 答：使用NSOperationQueue用来管理子类化的NSOperation对象，控制其线程并发数目。GCD和NSOperation都可以实现对线程的管理，区别是 NSOperation和NSOperationQueue是多线程的面向对象抽象。项目中使用NSOperation的优点是NSOperation是对线程的高度抽象，在项目中使用它，会使项目的程序结构更好，子类化NSOperation的设计思路，是具有面向对象的优点（复用、封装），使得实现是多线程支持，而接口简单，建议在复杂项目中使用。  
+   > 项目中使用GCD的优点是GCD本身非常简单、易用，对于不复杂的多线程操作，会节省代码量，而Block参数的使用，会是代码更为易读，建议在简单项目中使用。
+
+9. _**既然提到G.C.D，那么问一下在使用G.C.D以及block时要注意些什么？它们两是一回事儿么？block在ARC中和传统的MRC中的行为和用法有没有什么区别，需要注意些什么？**_
+
+   > 答：使用block是要注意，若将block做函数参数时，需要把它放到最后，GCD是Grand Central Dispatch，是一个对线程开源类库，而Block是闭包，是能够读取其他函数内部变量的函数。
+
+10. _**对于Objective-C，你认为它最大的优点和最大的不足是什么？对于不足之处，现在有没有可用的方法绕过这些不足来实现需求。如果可以的话，你有没有考虑或者实践过重新实现OC的一些功能，如果有，具体会如何做？**_
+
+    > 答：最大的优点是它的运行时特性，不足是没有命名空间，对于命名冲突，可以使用长命名法或特殊前缀解决，如果是引入的第三方库之间的命名冲突，可以使用link命令及flag解决冲突。
+
+11. _**你实现过一个框架或者库以供别人使用么？如果有，请谈一谈构建框架或者库时候的经验；如果没有，请设想和设计框架的public的API，并指出大概需要如何做、需要注意一些什么方面，来使别人容易地使用你的框架。**_
+
+    > 答：抽象和封装，方便使用。首先是对问题有充分的了解，比如构建一个文件解压压缩框架，从使用者的角度出发，只需关注发送给框架一个解压请求，框架完成复杂文件的解压操作，并且在适当的时候通知给是哦难过者，如解压完成、解压出错等。在框架内部去构建对象的关系，通过抽象让其更为健壮、便于更改。其次是API的说明文档。
+
+# 二、 第三方框架
+
+1. _**AFNetworking 底层原理分析**_
+
+   > AFNetworking主要是对NSURLSession和NSURLConnection\(iOS9.0废弃\)的封装,其中主要有以下类:  
+   > 1\). AFHTTPRequestOperationManager：内部封装的是 NSURLConnection, 负责发送网络请求, 使用最多的一个类。\(3.0废弃\)  
+   > 2\). AFHTTPSessionManager：内部封装是 NSURLSession, 负责发送网络请求,使用最多的一个类。  
+   > 3\). AFNetworkReachabilityManager：实时监测网络状态的工具类。当前的网络环境发生改变之后,这个工具类就可以检测到。  
+   > 4\). AFSecurityPolicy：网络安全的工具类, 主要是针对 HTTPS 服务。  
+   >   
+   > 5\). AFURLRequestSerialization：序列化工具类,基类。上传的数据转换成JSON格式  
+   > \(AFJSONRequestSerializer\).使用不多。  
+   > 6\). AFURLResponseSerialization：反序列化工具类;基类.使用比较多:  
+   > 7\). AFJSONResponseSerializer; JSON解析器,默认的解析器.  
+   > 8\). AFHTTPResponseSerializer; 万能解析器; JSON和XML之外的数据类型,直接返回二进  
+   > 制数据.对服务器返回的数据不做任何处理.  
+   > 9\). AFXMLParserResponseSerializer; XML解析器;
+
+2. _**描述下SDWebImage里面给UIImageView加载图片的逻辑**_
+
+   > SDWebImage 中为 UIImageView 提供了一个分类UIImageView+WebCache.h, 这个分类中有一个最常用的接口sd\_setImageWithURL:placeholderImage:，会在真实图片出现前会先显示占位图片，当真实图片被加载出来后再替换占位图片。  
+   >   
+   > 加载图片的过程大致如下：  
+   > 1.首先会在 SDWebImageCache 中寻找图片是否有对应的缓存, 它会以url 作为数据的索引先在内存中寻找是否有对应的缓存  
+   > 2.如果缓存未找到就会利用通过MD5处理过的key来继续在磁盘中查询对应的数据, 如果找到了, 就会把磁盘中的数据加载到内存中，并将图片显示出来  
+   > 3.如果在内存和磁盘缓存中都没有找到，就会向远程服务器发送请求，开始下载图片  
+   > 4.下载后的图片会加入缓存中，并写入磁盘中  
+   > 5.整个获取图片的过程都是在子线程中执行，获取到图片后回到主线程将图片显示出来  
+   >   
+   > SDWebImage原理：  
+   > 调用类别的方法：  
+   > 1. 从内存（字典）中找图片（当这个图片在本次使用程序的过程中已经被加载过），找到直接使用。  
+   > 2. 从沙盒中找（当这个图片在之前使用程序的过程中被加载过），找到使用，缓存到内存中。  
+   > 3. 从网络上获取，使用，缓存到内存，缓存到沙盒。
+
+参考：[SDWebImage内部实现过程](https://www.jianshu.com/p/4eda12661459)
+
+1. _**友盟统计接口统计的所有功能**_
+
+   > APP启动速度，APP停留页面时间等
+
+# 三、算法
+
+1._**不用中间变量,用两种方法交换A和B的值**_
+
+```
+// 1.中间变量 void swap(int a, int b) { int temp = a;
+       a = b;
+       b = temp;
+    } // 2.加法 void swap(int a, int b) {
+       a = a + b;
+       b = a - b;
+       a = a - b;
+    } // 3.异或（相同为0，不同为1\. 可以理解为不进位加法） void swap(int a, int b) {
+       a = a ^ b;
+       b = a ^ b;
+       a = a ^ b;
+    }
+```
+
+2._**求最大公约数**_
+
+```
+/** 1.直接遍历法 */ int maxCommonDivisor(int a, int b) { int max = 0; for (int i = 1; i 
+<
+=b; i++) { if (a % i == 0 
+&
+&
+ b % i == 0) {
+                max = I;
+            }
+        } return max;
+    } /** 2.辗转相除法 */ int maxCommonDivisor(int a, int b) { int r; while(a % b 
+>
+ 0) {
+            r = a % b;
+            a = b;
+            b = r;
+        } return b;
+    } // 扩展：最小公倍数 = (a * b)/最大公约数
+```
+
+3._**模拟栈操作**_
+
+```
+/**
+     *  栈是一种数据结构，特点：先进后出
+     *  练习：使用全局变量模拟栈的操作
+     */ #include 
+ #include 
+ #include 
+ //保护全局变量：在全局变量前加static后，这个全局变量就只能在本文件中使用 static int data[1024];//栈最多能保存1024个数据 static int count = 0;//目前已经放了多少个数(相当于栈顶位置) //数据入栈 push void push(int x){
+        assert(!full());//防止数组越界 data[count++] = x;
+    } //数据出栈 pop int pop(){
+        assert(!empty()); return data[--count];
+    } //查看栈顶元素 top int top(){
+        assert(!empty()); return data[count-1];
+    } //查询栈满 full bool full() { if(count 
+>
+= 1024) { return 1;
+        } return 0; 
+    } //查询栈空 empty bool empty() { if(count 
+<
+= 0) { return 1;
+        } return 0;
+    } int main(){ //入栈 for (int i = 1; i 
+<
+= 10; i++) {
+            push(i);
+        } //出栈 while(!empty()){ printf("%d ", top()); //栈顶元素 pop(); //出栈 } printf("\n"); return 0;
+    }
+```
+
+  
+4._**排序算法**_
+
+```
+选择排序、冒泡排序、插入排序三种排序算法可以总结为如下：
+
+    *   都将数组分为已排序部分和未排序部分。 1\. 选择排序将已排序部分定义在左端，然后选择未排序部分的最小元素和未排序部分的第一个元素交换。 2\. 冒泡排序将已排序部分定义在右端，在遍历未排序部分的过程执行交换，将最大元素交换到最右端。 3\. 插入排序将已排序部分定义在左端，将未排序部分元的第一个元素插入到已排序部分合适的位置。 
+```
+
+    \*   选择排序 /\*\*       \*  【选择排序】：最值出现在起始端      \*        \*  第1趟：在n个数中找到最小\(大\)数与第一个数交换位置      \*  第2趟：在剩下n-1个数中找到最小\(大\)数与第二个数交换位置      \*  重复这样的操作...依次与第三个、第四个...数交换位置      \*  第n-1趟，最终可实现数据的升序（降序）排列。      \*      \*/ void selectSort\(int \*arr, int length\) { for \(int i = 0; i 
+
+&lt;
+
+ length - 1; i++\) { //趟数 for \(int j = i + 1; j 
+
+&lt;
+
+ length; j++\) { //比较次数 if \(arr\[i\] 
+
+&gt;
+
+ arr\[j\]\) {                     int temp = arr\[i\];                     arr\[i\] = arr\[j\];                     arr\[j\] = temp;                 }             }         }     }      \*   冒泡排序 /\*\*       \*  【冒泡排序】：相邻元素两两比较，比较完一趟，最值出现在末尾      \*  第1趟：依次比较相邻的两个数，不断交换（小数放前，大数放后）逐个推进，最值最后出现在第n个元素位置      \*  第2趟：依次比较相邻的两个数，不断交换（小数放前，大数放后）逐个推进，最值最后出现在第n-1个元素位置      \*   ……   ……      \*  第n-1趟：依次比较相邻的两个数，不断交换（小数放前，大数放后）逐个推进，最值最后出现在第2个元素位置       \*/ void bublleSort\(int \*arr, int length\) { for\(int i = 0; i 
+
+&lt;
+
+ length - 1; i++\) { //趟数 for\(int j = 0; j 
+
+&lt;
+
+ length - i - 1; j++\) { //比较次数 if\(arr\[j\] 
+
+&gt;
+
+ arr\[j+1\]\) {                     int temp = arr\[j\];                     arr\[j\] = arr\[j+1\];                     arr\[j+1\] = temp;                 }             }          }     }
+
+---
+
+参考：  
+[8大排序算法图文讲解](https://link.jianshu.com/?t=https%3A%2F%2Fmp.weixin.qq.com%2Fs%3F__biz%3DMzAxMzQ3NzQ3Nw%3D%3D%26mid%3D2654249037%26idx%3D2%26sn%3D4b8512cd8435912df30bbb51272bbdc1%26chksm%3D8061f347b7167a51fa7ef4a42915922c5bdda376859503584ef8b434c0af8683abfee6540677%26scene%3D0%23wechat_redirect)  
+[常用算法OC实现](https://www.jianshu.com/p/d093df83979a)
+
+---
+
+5._**折半查找（二分查找）**_
+
+```
+/**
+     *  折半查找：优化查找时间（不用遍历全部数据）
+     *
+     *  折半查找的原理：
+     *   1
+>
+ 数组必须是有序的
+     *   2
+>
+ 必须已知min和max（知道范围）
+     *   3
+>
+ 动态计算mid的值，取出mid对应的值进行比较
+     *   4
+>
+ 如果mid对应的值大于要查找的值，那么max要变小为mid-1
+     *   5
+>
+ 如果mid对应的值小于要查找的值，那么min要变大为mid+1
+     *
+     */ // 已知一个有序数组, 和一个key, 要求从数组中找到key对应的索引位置  int findKey(int *arr, int length, int key) { int min = 0, max = length - 1, mid; while (min 
+<
+= max) {
+            mid = (min + max) / 2; //计算中间值 if (key 
+>
+ arr[mid]) {
+                min = mid + 1;
+            } else if (key 
+<
+ arr[mid]) {
+                max = mid - 1;
+            } else { return mid;
+            }
+        } return -1;
+    }
+```
+
+# 四、编码格式（优化细节）
+
+参考：[请Review下面的代码，并根据iOS的编码规范做出正确的修改](https://www.jianshu.com/p/21cfbaca7f07)
+
+1._**在 Objective-C 中，enum 建议使用NS\_ENUM和NS\_OPTIONS宏来定义枚举类型。**_
+
+```
+//定义一个枚举(比较严密) typedef NS_ENUM(NSInteger, BRUserGender) {
+        BRUserGenderUnknown, // 未知 BRUserGenderMale, // 男性 BRUserGenderFemale, // 女性 BRUserGenderNeuter // 无性 }; @interface BRUser : NSObject
+ @property (nonatomic, readonly, copy) NSString *name; @property (nonatomic, readonly, assign) NSUInteger age; @property (nonatomic, readonly, assign) BRUserGender gender;
+
+    - (instancetype)initWithName:(NSString *)name age:(NSUInteger)age gender:(BRUserGender)gender; @end //说明： //既然该类中已经有一个“初始化方法” ，用于设置 name、age 和 gender 的初始值: 那么在设计对应 @property 时就应该尽量使用不可变的对象：其三个属性都应该设为“只读”。用初始化方法设置好属性值之后，就不能再改变了。 //属性的参数应该按照下面的顺序排列： （原子性，读写，内存管理）
+```
+
+2._**避免使用C语言中的基本数据类型，建议使用 Foundation 数据类型，对应关系如下:**_
+
+> int -&gt; NSInteger  
+> unsigned -&gt; NSUInteger  
+> float -&gt; CGFloat  
+> 动画时间 -&gt; NSTimeInterval
+
+# 五、其它知识点
+
+1. _**HomeKit**_，是苹果2014年发布的智能家居平台。
+
+2. _**什么是 OpenGL、Quartz 2D？**_
+
+   > Quatarz 2d 是Apple提供的基本图形工具库。只是适用于2D图形的绘制。  
+   > OpenGL，是一个跨平台的图形开发库。适用于2D和3D图形的绘制。
+
+3. _**ffmpeg框架：**_
+
+   > ffmpeg 是音视频处理工具，既有音视频编码解码功能，又可以作为播放器使用。
+
+4. _**谈谈 UITableView 的优化**_
+
+   > 1\). 正确的复用cell；  
+   > 2\). 设计统一规格的Cell；  
+   > 3\). 提前计算并缓存好高度（布局），因为heightForRowAtIndexPath:是调用最频繁的方法；  
+   > 4\). 异步绘制，遇到复杂界面，遇到性能瓶颈时，可能就是突破口；  
+   > 5\). 滑动时按需加载，这个在大量图片展示，网络加载的时候很管用！  
+   > 6\). 减少子视图的层级关系；  
+   > 7\). 尽量使所有的视图不透明化以及做切圆操作；  
+   > 8\). 不要动态的add 或者 remove 子控件。最好在初始化时就添加完，然后通过hidden来控制是否显示；  
+   > 9\). 使用调试工具分析问题。
+
+5. _**如何实行cell的动态的行高**_
+
+   > 如果希望每条数据显示自身的行高，必须设置两个属性，1.预估行高，2.自定义行高。  
+   > 设置预估行高 tableView.estimatedRowHeight = 200。  
+   > 设置定义行高 tableView.estimatedRowHeight = UITableViewAutomaticDimension。  
+   > 如果要让自定义行高有效，必须让容器视图有一个自下而上的约束。
+
+6. _**说说你对 block 的理解**_
+
+   > 栈上的自动复制到堆上，block 的属性修饰符是 copy，循环引用的原理和解决方案。  
+   >   
+   > block的循环引用；block的代码实现；为什么会造成循环引用；block是如何强引用self的；  
+   > 参考：[Block 代码块中用到了self引用问题，导致循环引用](https://link.jianshu.com/?t=http%3A%2F%2Fblog.sina.com.cn%2Fs%2Fblog_945590aa0102w77w.html)
+
+7. _**什么是野指针、空指针？**_
+
+   > 野指针：不知道指向了哪里的指针叫野指针。即指针指向不确定，指针存的地址是一个垃圾值，未初始化。  
+   > 空指针：不指向任何位置的指针叫空指针。即指针没有指向，指针存的地址是一个空地址，NULL。
+
+8. _**什么是 OOA / OOD / OOP ?**_
+
+   > OOA（Object Oriented Analysis） --面向对象分析  
+   > OOD（Object Oriented Design） --面向对象设计  
+   > OOP（Object Oriented Programming）--面向对象编程
+
+9. _**多线程是什么**_
+
+   > 多线程是个复杂的概念，按字面意思是同步完成多项任务，提高了资源的使用效率，从硬件、操作系统、应用软件不同的角度去看，多线程被赋予不同的内涵，对于硬件，现在市面上多数的CPU都是多核的，多核的CPU运算多线程更为出色;从操作系统角度，是多任务，现在用的主流操作系统都是多任务的，可以一边听歌、一边写博客;对于应用来说，多线程可以让应用有更快的回应，可以在网络下载时，同时响应用户的触摸操作。在iOS应用中，对多线程最初的理解，就是并发，它的含义是原来先做烧水，再摘菜，再炒菜的工作，会变成烧水的同时去摘菜，最后去炒菜。
+
+10. _**iOS 中的多线程**_
+
+    > iOS中的多线程，是Cocoa框架下的多线程，通过Cocoa的封装，可以让我们更为方便的使用线程，做过C++的同学可能会对线程有更多的理解，比如线程的创立，信号量、共享变量有认识，Cocoa框架下会方便很多，它对线程做了封装，有些封装，可以让我们创建的对象，本身便拥有线程，也就是线程的对象化抽象，从而减少我们的工程，提供程序的健壮性。  
+    >   
+    > GCD是\(Grand Central Dispatch\)的缩写 ，从系统级别提供的一个易用地多线程类库，具有运行时的特点，能充分利用多核心硬件。GCD的API接口为C语言的函数，函数参数中多数有Block，关于Block的使用参看这里，为我们提供强大的“接口”，对于GCD的使用参见本文  
+    >   
+    > NSOperation与Queue  
+    >   
+    > NSOperation是一个抽象类，它封装了线程的细节实现，我们可以通过子类化该对象，加上NSQueue来同面向对象的思维，管理多线程程序。具体可参看这里：一个基于NSOperation的多线程网络访问的项目。  
+    >   
+    > NSThread  
+    >   
+    > NSThread是一个控制线程执行的对象，它不如NSOperation抽象，通过它我们可以方便的得到一个线程，并控制它。但NSThread的线程之间的并发控制，是需要我们自己来控制的，可以通过NSCondition实现。  
+    >   
+    > 参看 iOS多线程编程之NSThread的使用   
+    >   
+    > 其他多线程  
+    >   
+    > 在Cocoa的框架下，通知、Timer和异步函数等都有使用多线程，\(待补充\).
+
+11. _**在项目什么时候选择使用GCD，什么时候选择NSOperation?**_
+
+    > 项目中使用NSOperation的优点是NSOperation是对线程的高度抽象，在项目中使用它，会使项目的程序结构更好，子类化NSOperation的设计思路，是具有面向对象的优点\(复用、封装\)，使得实现是多线程支持，而接口简单，建议在复杂项目中使用。  
+    >   
+    > 项目中使用GCD的优点是GCD本身非常简单、易用，对于不复杂的多线程操作，会节省代码量，而Block参数的使用，会是代码更为易读，建议在简单项目中使用。
+
+12. _**KVO，NSNotification，delegate及block区别**_
+
+    > \* KVO就是cocoa框架实现的观察者模式，一般同KVC搭配使用，通过KVO可以监测一个值的变化，比如View的高度变化。是一对多的关系，一个值的变化会通知所有的观察者。  
+    > \* NSNotification是通知，也是一对多的使用场景。在某些情况下，KVO和NSNotification是一样的，都是状态变化之后告知对方。NSNotification的特点，就是需要被观察者先主动发出通知，然后观察者注册监听后再来进行响应，比KVO多了发送通知的一步，但是其优点是监听不局限于属性的变化，还可以对多种多样的状态变化进行监听，监听范围广，使用也更灵活。  
+    >   
+    > \* delegate 是代理，就是我不想做的事情交给别人做。比如狗需要吃饭，就通过delegate通知主人，主人就会给他做饭、盛饭、倒水，这些操作，这些狗都不需要关心，只需要调用delegate（代理人）就可以了，由其他类完成所需要的操作。所以delegate是一对一关系。  
+    >   
+    > \* block是delegate的另一种形式，是函数式编程的一种形式。使用场景跟delegate一样，相比delegate更灵活，而且代理的实现更直观。  
+    >   
+    > \* KVO一般的使用场景是数据，需求是数据变化，比如股票价格变化，我们一般使用KVO（观察者模式）。delegate一般的使用场景是行为，需求是需要别人帮我做一件事情，比如买卖股票，我们一般使用delegate。  
+    > Notification一般是进行全局通知，比如利好消息一出，通知大家去买入。delegate是强关联，就是委托和代理双方互相知道，你委托别人买股票你就需要知道经纪人，经纪人也不要知道自己的顾客。Notification是弱关联，利好消息发出，你不需要知道是谁发的也可以做出相应的反应，同理发消息的人也不需要知道接收的人也可以正常发出消息。
+
+13. _**将一个函数在主线程执行的4种方法**_
+
+```
+*   GCD方法，通过向主线程队列发送一个block块，使block里的方法可以在主线程中执行。 dispatch_async(dispatch_get_main_queue(), ^{ //需要执行的方法 });
+  
+
+    * NSOperation 方法 NSOperationQueue *mainQueue = [NSOperationQueue mainQueue]; //主队列 NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{ //需要执行的方法 }];
+    [mainQueue addOperation:operation];
+  
+
+    * NSThread 方法
+
+    [self performSelector:@selector(method) onThread:[NSThread mainThread] withObject:nil waitUntilDone:YES modes:nil];
+
+    [self performSelectorOnMainThread:@selector(method) withObject:nil waitUntilDone:YES];
+
+    [[NSThread mainThread] performSelector:@selector(method) withObject:nil];
+    
+
+    *   RunLoop方法
+
+    [[NSRunLoop mainRunLoop] performSelector:@selector(method) withObject:nil];
+```
+
+1. _**如何让计时器调用一个类方法**_
+
+   > \* 计时器只能调用实例方法，但是可以在这个实例方法里面调用静态方法。  
+   > \* 使用计时器需要注意，计时器一定要加入RunLoop中，并且选好model才能运行。scheduledTimerWithTimeInterval方法创建一个计时器并加入到RunLoop中所以可以直接使用。  
+   > \* 如果计时器的repeats选择YES说明这个计时器会重复执行，一定要在合适的时机调用计时器的invalid。不能在dealloc中调用，因为一旦设置为repeats 为yes，计时器会强持有self，导致dealloc永远不会被调用，这个类就永远无法被释放。比如可以在viewDidDisappear中调用，这样当类需要被回收的时候就可以正常进入dealloc中了。
+
+   ```
+   [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerMethod) userInfo:nil repeats:YES];
+
+   -(void)timerMethod
+   { //调用类方法 [[self class] staticMethod];
+   }
+
+   -(void)invalid
+   {
+       [timer invalid];
+       timer = nil;
+   }
+   ```
+
+2. _**如何重写类方法**_
+
+   * 1、在子类中实现一个同基类名字一样的静态方法
+
+   * 2、在调用的时候不要使用类名调用，而是使用\[self class\]的方式调用。原理，用类名调用是早绑定，在编译期绑定，用\[self class\]是晚绑定，在运行时决定调用哪个方法。
+
+3. _**NSTimer创建后，会在哪个线程运行**_
+
+   * 用scheduledTimerWithTimeInterval创建的，在哪个线程创建就会被加入哪个线程的RunLoop中就运行在哪个线程
+
+   * 自己创建的Timer，加入到哪个线程的RunLoop中就运行在哪个线程。
+
+4. _**id和NSObject＊的区别**_
+
+   * id是一个 objc\_object 结构体指针，定义是
+
+   ```
+   typedef struct objc_object *id
+   ```
+
+   * id可以理解为指向对象的指针。所有oc的对象 id都可以指向，编译器不会做类型检查，id调用任何存在的方法都不会在编译阶段报错，当然如果这个id指向的对象没有这个方法，该崩溃还是会崩溃的。
+
+   * NSObject \*指向的必须是NSObject的子类，调用的也只能是NSObjec里面的方法否则就要做强制类型转换。
+
+   * 不是所有的OC对象都是NSObject的子类，还有一些继承自NSProxy。NSObject \*可指向的类型是id的子集。
+
+5. _**static关键字的作用**_
+
+* 回答一：
+
+  > 1.在函数体内定义的static他的作用域为该函数体,该变量在内存中只被分配一次,因此,其值在下次调用时仍维持上次的值不变；  
+  > 2.在模块内的static全局变量可以被模块内所有函数访问,但是不能被模块外的其他函数访问；  
+  > 3.在模块内的staic全局变量可以被这一模块内的其他函数调用,这个函数的使用范围被限制在这个模块内;  
+  > 4.在类中的static成员变量属于整个类所拥有,对类的所有对象只有一份拷贝,也就是说只要是该类的对象,那么该对象的中被static修饰的成员变量都指向同一块地址。
+
+* 回答二：
+
+  > 修饰局部变量：  
+  > 1.延长局部变量的生命周期,程序结束才会销毁。  
+  > 2.局部变量只会生成一份内存,只会初始化一次。  
+  > 3.改变局部变量的作用域。  
+  >   
+  > 修饰全局变量:  
+  > 1.只能在本文件中访问,修改全局变量的作用域,生命周期不会改  
+  > 2.避免重复定义全局变量
+
+* 在OC中static关键字使用误区
+
+  > 1.使用static修饰实例变量是不被允许的  
+  > 2.使用static修饰了方法，也是错误的
+
+参考：  
+[如何正确使用const,static,extern](https://www.jianshu.com/p/2fd58ed2cf55)  
+[OC中 static 与 const 的作用](https://link.jianshu.com/?t=http%3A%2F%2Fblog.csdn.net%2Fcaoxin406%2Farticle%2Fdetails%2F47109975)
+
+1. _**使用 Swift 语言编程的优缺点**_  
+   总的来说，我认为使用 Swift 来作为编程语言的优点还是要远远大于缺点的，而且很多缺点苹果也在逐渐改善。
+
+* ##### 优点:
+
+  > 1、简洁的语法  
+  > 2、更强的类型安全  
+  > 3、函数式编程的支持  
+  >    Swift 语言本身提供了对函数式编程的支持。  
+  >    Objc 本身是不支持的，但是可以通过引入 ReactiveCocoa 这个库来支持函数式编程。  
+  > 4、编写 OS X 下的自动化脚本
+* ##### 缺点
+
+  > 1、App体积变大  
+  >     使用Swift 后， App 体积大概增加 5-8 M 左右，对体积大小敏感的慎用。  
+  >     体积变大的原因是因为 Swift 还在变化，所以 Apple 没有在 iOS 系统里放入 Swift 的运行库，反而是每个 App 里都要包含其对应的 Swift 运行库。  
+  > 2、Xcode 支持不够好  
+  >     如果你是使用 Xcode经常卡住或者崩溃想必你是肯定碰到过了，这个是目前使用 Swift 最让人头疼的事情，即使是到现在XCode 9， 有时候也会遇到这种问题，所以要看你的承受力了……  
+  > 3、第三方库的支持不够多  
+  >     目前确实 Swift 编写的第三方库确实不多，但可以通过桥接的方式来使用 Objc 的三方库，基本上没有太大问题。现在已经改善很多了…  
+  > 4、语言版本更新带来的编译问题  
+  >    语言本身还在发展，所以每次版本更新后都会出现编译不过的情况（至少到目前为止还是），但是自从 4.0 版本发布后，改动没有 beta 时候那么大了，而且根据 Xcode 提示基本就可以解决语法变动导致的编译问题了。
+
+>
+
 
 
