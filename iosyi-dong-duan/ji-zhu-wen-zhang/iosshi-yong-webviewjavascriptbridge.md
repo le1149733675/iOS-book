@@ -1,5 +1,5 @@
 ```
-     之前和同行交流的时候，有些童鞋就表示他们公司已经开始在一些完整的模块里使用RN或者Weex来开发页面，并且页面用起来还很顺滑，瞬间让我感觉别人家的公司好潮流。。这两天刚好手上项目里有个需求，原生页面需要与前端多个延伸的界面进行交互，并且隐藏原生的导航栏。如何让我和前端相互助力呢，这里我们借力的桥梁就是Bridge。所以我选择WebViewJavascriptBridge来处理，安卓的同事也是采用相应的库。GitHub地址：**https://github.com/marcuswestin/WebViewJavascriptBridge **感谢开源作者
+     【原创】之前和同行交流的时候，有些童鞋就表示他们公司已经开始在一些完整的模块里使用RN或者Weex来开发页面，并且页面用起来还很顺滑，瞬间让我感觉别人家的公司好潮流。。这两天刚好手上项目里有个需求，原生页面需要与前端多个延伸的界面进行交互，并且隐藏原生的导航栏。如何让我和前端相互助力呢，这里我们借力的桥梁就是Bridge。所以我选择WebViewJavascriptBridge来处理，安卓的同事也是采用相应的库。GitHub地址：**https://github.com/marcuswestin/WebViewJavascriptBridge **感谢开源作者
 
     众所周知，UIWebView和WKWebView的性能差异很大。例如我在此项目中分别使用二者打开网页，模拟器的内存消耗如下如所示：
 ```
